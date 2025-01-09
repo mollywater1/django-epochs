@@ -1,0 +1,109 @@
+{% extends 'guide/base.html' %}
+{% load static %}
+{% block title %}Мини-игра: Найди все Колизеи{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1>Мини-игра: Найди все Колизеи</h1>
+    <p>Кликните на все 12 Колизеев, чтобы выиграть игру!</p>
+    <p id="counter">Найдено Колизеев: 0 из 12</p>
+
+    <div id="game-container" class="mx-auto position-relative">
+        <img src="{% static 'guide/images/rome_puzzle.jpg' %}" id="background" alt="Фон игры">
+    </div>
+
+    <a href="{% url 'era_detail' era.pk %}" class="btn btn-primary mt-4">Вернуться к эпохе</a>
+</div>
+
+<script>
+    const totalColiseums = 12;
+    const xpReward = 50;
+    const coliseumSize = 15;
+    let foundColiseums = 0;
+
+    const gameContainer = document.getElementById('game-container');
+    const counterElement = document.getElementById('counter');
+
+    function createColiseums() {
+        for (let i = 0; i < totalColiseums; i++) {
+            const coliseum = document.createElement('img');
+            coliseum.src = "{% static 'guide/images/coll.png' %}";
+            coliseum.alt = "Колизей";
+            coliseum.classList.add('coliseum');
+            coliseum.style.width = `${coliseumSize}px`;
+            coliseum.style.height = `${coliseumSize}px`;
+
+            // Случайное размещение
+            coliseum.style.position = 'absolute';
+            coliseum.style.left = `${Math.random() * (gameContainer.offsetWidth - coliseumSize)}px`;
+            coliseum.style.top = `${Math.random() * (gameContainer.offsetHeight - coliseumSize)}px`;
+
+            coliseum.addEventListener('click', () => {
+                coliseum.remove();
+                foundColiseums++;
+                updateCounter();
+                checkWin();
+            });
+
+            gameContainer.appendChild(coliseum);
+        }
+    }
+
+    function updateCounter() {
+        counterElement.textContent = `Найдено Колизеев: ${foundColiseums} из ${totalColiseums}`;
+    }
+
+    function checkWin() {
+        if (foundColiseums === totalColiseums) {
+            setTimeout(() => {
+                alert(`Поздравляем! Вы нашли все Колизеи и получили ${xpReward} XP!`);
+                window.location.href = "{% url 'era_detail' era.pk %}";
+            }, 100);
+        }
+    }
+
+    // Инициализация
+    window.onload = () => {
+        createColiseums();
+        updateCounter();
+    };
+</script>
+
+<style>
+    #game-container {
+        width: 1280px;
+        height: 720px;
+        border: 2px solid #ccc;
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+    }
+
+    #background {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    .coliseum {
+        z-index: 2;
+        cursor: pointer;
+        position: absolute;
+        transition: transform 0.2s ease;
+    }
+
+    .coliseum:hover {
+        transform: scale(1.2);
+    }
+
+    #counter {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}

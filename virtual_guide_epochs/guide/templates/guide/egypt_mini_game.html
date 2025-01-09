@@ -1,0 +1,147 @@
+{% extends 'guide/base.html' %}
+{% load static %}
+{% block title %}Мини-игра: Лабиринт{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="mb-4">Мини-игра: Пройди лабиринт</h1>
+    <p>Управление: <strong>W</strong> - вверх, <strong>A</strong> - влево, <strong>S</strong> - вниз, <strong>D</strong> - вправо</p>
+    <p>Нажмите любую клавишу для начала!</p>
+    <canvas id="mazeCanvas"></canvas>
+    <a href="{% url 'era_detail' era.pk %}" class="btn btn-primary mt-3">Вернуться к эпохе</a>
+</div>
+
+<script>
+    const canvas = document.getElementById('mazeCanvas');
+    const ctx = canvas.getContext('2d');
+    const tileSize = 50;
+
+    canvas.width = 20 * tileSize;
+    canvas.height = 20 * tileSize;
+    const maze = [
+        [4, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        [1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
+        [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+        [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+        [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+        [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    ];
+    let scarabsCollected = 0;
+
+    // Загрузка текстур
+    const textures = {
+        wall: new Image(),
+        start: new Image(),
+        finish: new Image(),
+        player: new Image(),
+        scarab: new Image(),
+    };
+
+    textures.wall.src = "{% static 'guide/images/wall.png' %}";
+    textures.start.src = "{% static 'guide/images/start.png' %}";
+    textures.finish.src = "{% static 'guide/images/finish.png' %}";
+    textures.player.src = "{% static 'guide/images/player.png' %}";
+    textures.scarab.src = "{% static 'guide/images/juk.png' %}";
+
+    // Отрисовка лабиринта
+    function drawMaze(maze, player, scarabs) {
+        for (let y = 0; y < maze.length; y++) {
+            for (let x = 0; x < maze[y].length; x++) {
+                switch (maze[y][x]) {
+                    case 1:
+                        ctx.drawImage(textures.wall, x * tileSize, y * tileSize, tileSize, tileSize);
+                        break;
+                    case 3:
+                        ctx.drawImage(textures.finish, x * tileSize, y * tileSize, tileSize, tileSize);
+                        break;
+                    case 4:
+                        ctx.drawImage(textures.start, x * tileSize, y * tileSize, tileSize, tileSize);
+                        break;
+                    default:
+                        ctx.fillStyle = "#FFFFFF"; // Белая дорога
+                        ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                        break;
+                }
+            }
+        }
+
+        // Отрисовка скарабеев
+        scarabs.forEach((scarab) => {
+            ctx.drawImage(
+                textures.scarab,
+                scarab.x * tileSize,
+                scarab.y * tileSize,
+                tileSize,
+                tileSize
+            );
+        });
+
+        // Отрисовка игрока
+        ctx.drawImage(textures.player, player.x * tileSize, player.y * tileSize, tileSize, tileSize);
+    }
+
+    let player = { x: 0, y: 0 };
+    const scarabs = [
+        { x: 5, y: 8 },
+        { x: 17, y: 9 },
+        { x: 7, y: 17 },
+    ];
+
+    function movePlayer(dx, dy, maze) {
+        const newX = player.x + dx;
+        const newY = player.y + dy;
+
+        if (maze[newY][newX] === 0 || maze[newY][newX] === 3) {
+            player.x = newX;
+            player.y = newY;
+
+            // Сбор скарабеев
+            scarabs.forEach((scarab, index) => {
+                if (scarab.x === player.x && scarab.y === player.y) {
+                    scarabs.splice(index, 1);
+                    scarabsCollected++;
+                }
+            });
+
+            // Проверка финиша
+            if (maze[newY][newX] === 3) {
+                if (scarabsCollected === 3) {
+                    alert("Поздравляем! Вы собрали всех скарабеев и завершили лабиринт!");
+                    window.location.href = "{% url 'era_detail' era.pk %}";
+                } else {
+                    alert("Вы не собрали всех скарабеев!");
+                }
+            }
+        }
+
+        drawMaze(maze, player, scarabs);
+    }
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "w") movePlayer(0, -1, maze);
+        if (e.key === "a") movePlayer(-1, 0, maze);
+        if (e.key === "s") movePlayer(0, 1, maze);
+        if (e.key === "d") movePlayer(1, 0, maze);
+        if (e.key === "ц") movePlayer(0, -1, maze);
+        if (e.key === "ф") movePlayer(-1, 0, maze);
+        if (e.key === "ы") movePlayer(0, 1, maze);
+        if (e.key === "в") movePlayer(1, 0, maze);
+    });
+
+    // Вызов отрисовки лабиринта
+    drawMaze(maze, player, scarabs);
+</script>
+{% endblock %}

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c6e511da-1be8-4a92-93c9-29274499a38e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/VirtualGuideEpochs.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/management/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/management/commands/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/management/commands/load_egypt_quiz.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/management/commands/load_greece_quiz.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/management/commands/load_rome_quiz.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/migrations/0007_remove_userprofile_completed_quests_delete_quest.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/migrations/0008_alter_era_image_alter_era_name.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/migrations/0009_remove_material_video_url_alter_material_image_and_more.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/migrations/0010_remove_quizquestion_correct_option_and_more.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/migrations/0011_userprofile_completed_quizzes_alter_userprofile_user_and_more.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/migrations/0012_remove_userprofile_completed_quizzes_and_more.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/signals.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/css/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/images/coll.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/images/coll1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/images/finish.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/images/juk.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/images/player.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/images/rome_puzzle.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/images/start.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/images/wall.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/temp/finish.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/temp/player.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/temp/start.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/static/guide/temp/wall.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/templates/guide/base.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/templates/guide/egypt_mini_game.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/templates/guide/era_details.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/templates/guide/greece_mini_game.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/templates/guide/home.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/templates/guide/login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/templates/guide/profile.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/templates/guide/quiz.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/templates/guide/quiz_result.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/templates/guide/register.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/templates/guide/rome_mini_game.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/guide/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/media/images/The_Parthenon_in_Athens.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/media/images/The_Parthenon_in_Athens_oPnfghJ.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/media/images/egypt.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/media/images/egypt1.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/media/images/egypt1_xm68muT.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/media/images/egypt_aLTHxuE.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/media/images/gods/anubis.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/media/images/gods/ra.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/media/images/rome.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/virtual_guide_epochs/media/images/rome_pVfA2CR.jpg" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2qgOymLovmQpPwVJDq5cVyNUmXA" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-0509580d9d50-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.14494.241" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c6e511da-1be8-4a92-93c9-29274499a38e" name="Changes" comment="" />
+      <created>1735081008484</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1735081008484</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+</project>

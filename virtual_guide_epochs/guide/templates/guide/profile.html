@@ -1,0 +1,12 @@
+{% extends 'guide/base.html' %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<h1>Профиль пользователя</h1>
+<p>Имя пользователя: <strong>{{ profile.user.username }}</strong></p>
+<p>Очки опыта: <strong>{{ profile.xp }}</strong></p>
+
+
+<a href="{% url 'home' %}" class="btn btn-secondary mt-3">На главную</a>
+{% endblock %}

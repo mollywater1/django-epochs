@@ -1,0 +1,24 @@
+{% extends 'guide/base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Добро пожаловать в Виртуальный гид по эпохам!</h1>
+
+<div class="row">
+    {% for era in eras %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                {% if era.image %}
+                    <img src="{{ era.image.url }}" class="card-img-top" alt="{{ era.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ era.name }}</h5>
+                    <p class="card-text">{{ era.description|truncatewords:15 }}</p>
+                    <a href="{% url 'era_detail' era.pk %}" class="btn btn-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

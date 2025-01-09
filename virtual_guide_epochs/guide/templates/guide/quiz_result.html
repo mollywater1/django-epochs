@@ -1,0 +1,10 @@
+{% extends 'guide/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Результат викторины</h1>
+    <h3>{{ score }}</h3>
+    <p>Всего вопросов: {{ total }}</p>
+    <a href="{% url 'era_detail' era.pk %}" class="btn btn-primary">Вернуться к эпохе</a>
+</div>
+{% endblock %}

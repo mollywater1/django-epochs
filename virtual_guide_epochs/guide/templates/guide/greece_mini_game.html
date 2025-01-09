@@ -1,0 +1,195 @@
+{% extends 'guide/base.html' %}
+{% load static %}
+{% block title %}Мини-игра: Построй пантеон греческих богов{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1>Мини-игра: Построй пантеон греческих богов</h1>
+    <p>Перетащите имена богов в правильные уровни на дереве. Если всё будет верно, вы выиграете!</p>
+
+    <!-- Дерево -->
+    <div id="tree-container" class="mx-auto">
+        <!-- Уровень 1 -->
+        <div class="tree-row" data-level="1">
+            <div class="tree-node empty"></div>
+        </div>
+        <!-- Уровень 2 -->
+        <div class="tree-row" data-level="2">
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+        </div>
+        <!-- Уровень 3 -->
+        <div class="tree-row" data-level="3">
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+        </div>
+        <!-- Уровень 4 -->
+        <div class="tree-row" data-level="4">
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+        </div>
+        <!-- Уровень 5 -->
+        <div class="tree-row" data-level="5">
+            <div class="tree-node empty"></div>
+        </div>
+        <!-- Уровень 6 -->
+        <div class="tree-row" data-level="6">
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+            <div class="tree-node empty"></div>
+        </div>
+    </div>
+
+    <!-- Имена богов -->
+    <div id="names-container" class="text-center">
+        <!-- Сюда будут добавлены имена богов в случайном порядке -->
+    </div>
+
+    <!-- Кнопка для возврата -->
+    <a href="{% url 'era_detail' era.pk %}" class="btn btn-primary mt-4">Вернуться к эпохе</a>
+</div>
+
+<script>
+    const godNames = [
+        { name: "Хаос", level: "1" },
+        { name: "Гея", level: "2" },
+        { name: "Уран", level: "2" },
+        { name: "Афродита", level: "3" },
+        { name: "Кронос", level: "3" },
+        { name: "Рея", level: "3" },
+        { name: "Гера", level: "4" },
+        { name: "Зевс", level: "4" },
+        { name: "Гестия", level: "4" },
+        { name: "Посейдон", level: "4" },
+        { name: "Аид", level: "4" },
+        { name: "Деметра", level: "4" },
+        { name: "Арес", level: "5" },
+        { name: "Артемида", level: "6" },
+        { name: "Аполлон", level: "6" },
+        { name: "Афина", level: "6" },
+        { name: "Гермес", level: "6" },
+        { name: "Дионис", level: "6" }
+    ];
+
+    // Перемешивание массива
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Генерация имён богов
+    const namesContainer = document.getElementById('names-container');
+    shuffleArray(godNames).forEach(god => {
+        const div = document.createElement('div');
+        div.classList.add('draggable');
+        div.setAttribute('draggable', 'true');
+        div.setAttribute('data-level', god.level);
+        div.textContent = god.name;
+        namesContainer.appendChild(div);
+    });
+
+    const draggables = document.querySelectorAll('.draggable');
+    const treeNodes = document.querySelectorAll('.tree-node');
+
+    // Перетаскивание
+    draggables.forEach(draggable => {
+        draggable.addEventListener('dragstart', () => {
+            draggable.classList.add('dragging');
+        });
+
+        draggable.addEventListener('dragend', () => {
+            draggable.classList.remove('dragging');
+        });
+    });
+
+    treeNodes.forEach(node => {
+        node.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        node.addEventListener('drop', (e) => {
+            const draggable = document.querySelector('.dragging');
+            const level = node.parentElement.dataset.level;
+            if (node.children.length === 0 && draggable.dataset.level === level) {
+                node.textContent = draggable.textContent;
+                draggable.remove();
+                checkWin();
+            } else {
+                alert("Неправильный уровень или ячейка уже заполнена!");
+            }
+        });
+    });
+
+    // Проверка победы
+    function checkWin() {
+        const remainingDraggables = document.querySelectorAll('.draggable').length;
+        const filledNodes = Array.from(treeNodes).filter(node => node.textContent !== '');
+        if (remainingDraggables === 0 && filledNodes.length === treeNodes.length) {
+            setTimeout(() => {
+                alert('Поздравляем! Вы правильно построили пантеон!');
+                window.location.href = "{% url 'era_detail' era.pk %}";
+            }, 100);
+        }
+    }
+</script>
+
+<style>
+    #tree-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px auto;
+    }
+
+    .tree-row {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .tree-node {
+        width: 100px;
+        height: 50px;
+        margin: 5px;
+        border: 2px dashed #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        background-color: #f9f9f9;
+    }
+
+    #names-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .draggable {
+        width: 100px;
+        height: 50px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        text-align: center;
+        line-height: 50px;
+        background-color: #f4f4f4;
+        cursor: grab;
+        font-weight: bold;
+    }
+
+    .draggable.dragging {
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'guide/base.html' %}
+{% load static %}
+{% block title %}{{ era.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center">{{ era.name }}</h1>
+    <p class="era-description">{{ era.description }}</p>
+
+    <!-- Отображение изображения эпохи -->
+    {% if era.image %}
+    <div class="text-center my-4">
+        <img src="{{ era.image.url }}" alt="{{ era.name }}" class="fixed-size-image">
+    </div>
+    {% endif %}
+
+    <!-- Случайный факт -->
+    <h3 class="section-title">Случайный факт:</h3>
+    <div class="alert alert-info random-fact">
+        {{ random_fact }}
+    </div>
+
+    <!-- Лекции -->
+    <h3 class="section-title">Лекции:</h3>
+    <ul class="list-group mb-4 lectures-list">
+        {% for lecture in lectures %}
+            <li class="list-group-item">
+                <strong>{{ lecture.title }}</strong>
+                <p>{{ lecture.content|safe }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Раздел кнопок -->
+    <div class="row mt-4">
+        <div class="col-md-6 text-center">
+            <h3 class="section-title">Мини-игра:</h3>
+            <a href="{% url 'mini_game' era.pk %}" class="btn btn-success btn-block">Перейти к мини-игре</a>
+        </div>
+        <div class="col-md-6 text-center">
+            <h3 class="section-title">Викторина:</h3>
+            <a href="{% url 'quiz' era.pk %}" class="btn btn-primary btn-block">Пройти викторину</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Универсальный стиль для текста */
+    body {
+        font-family: 'Arial', sans-serif;
+    }
+
+    .era-description {
+        font-size: 16px;
+        color: #555;
+        line-height: 1.6;
+    }
+
+    .random-fact {
+        font-size: 16px;
+        font-style: italic;
+        color: #333;
+    }
+
+    .lectures-list {
+        font-size: 16px;
+        color: #444;
+    }
+
+    /* Заголовки */
+    .section-title {
+        font-size: 24px;
+        color: #222;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    /* Изображение эпохи */
+    .fixed-size-image {
+        width: 100%;
+        max-width: 1280px;
+        height: auto;
+        object-fit: cover;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+    }
+
+    /* Кнопки */
+    .btn-block {
+        width: 80%;
+        padding: 10px;
+        font-size: 18px;
+        margin-top: 10px;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+    /* Разделение кнопок */
+    .row {
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
