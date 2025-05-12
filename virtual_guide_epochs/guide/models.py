@@ -1,5 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import User
 
+# Эпоха (Греция, Рим, Египет, Месопотамия и т.п.)
 class Era(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -8,47 +10,59 @@ class Era(models.Model):
     def __str__(self):
         return self.name
 
-class Material(models.Model):
-    era = models.ForeignKey(Era, on_delete=models.CASCADE, related_name='materials')
-    title = models.CharField(max_length=200)
-    content = models.TextField()
-    image = models.ImageField(upload_to='images/materials/', null=True, blank=True)
-
-    def __str__(self):
-        return self.title
-
+# Лекция в рамках эпохи
 class Lecture(models.Model):
     era = models.ForeignKey(Era, on_delete=models.CASCADE, related_name='lectures')
     title = models.CharField(max_length=200)
     content = models.TextField()
+    order = models.PositiveIntegerField()  # от 1 до 10
+
+    class Meta:
+        unique_together = ('era', 'order')
+        ordering = ['era', 'order']
 
     def __str__(self):
-        return self.title
+        return f"{self.era.name} — Лекция {self.order}: {self.title}"
 
+# Вопрос по конкретной лекции
 class QuizQuestion(models.Model):
-    era = models.ForeignKey(Era, on_delete=models.CASCADE, related_name='quiz_questions')
-    question = models.CharField(max_length=255,default='')
-    option1 = models.CharField(max_length=255,default='')
-    option2 = models.CharField(max_length=255,default='')
-    option3 = models.CharField(max_length=255,default='')
-    option4 = models.CharField(max_length=255,default='')
+    lecture = models.ForeignKey(Lecture, on_delete=models.CASCADE, related_name='quiz_questions')
+    question = models.CharField(max_length=255, default='')
+    option1 = models.CharField(max_length=255, default='')
+    option2 = models.CharField(max_length=255, default='')
+    option3 = models.CharField(max_length=255, default='')
+    option4 = models.CharField(max_length=255, default='')
     correct_answer = models.CharField(max_length=255, default='')
 
     def correct_option(self):
         return self.correct_answer
+
     def __str__(self):
-        return self.question
+        return f"Вопрос: {self.question}"
 
+# Прогресс по каждой лекции
+class LectureProgress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    lecture = models.ForeignKey(Lecture, on_delete=models.CASCADE)
+    viewed = models.BooleanField(default=False)
+    quiz_completed = models.BooleanField(default=False)
 
-from django.contrib.auth.models import User
+    class Meta:
+        unique_together = ('user', 'lecture')
 
-from django.contrib.auth.models import User
-from django.db import models
+# Открыта ли мини-игра для всей эпохи
+class MiniGameUnlock(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    era = models.ForeignKey(Era, on_delete=models.CASCADE)
+    unlocked = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('user', 'era')
+
+# Профиль пользователя (очки опыта и т.д.)
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     xp = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"Profile of {self.user.username}"
-
+        return f"Профиль: {self.user.username}"

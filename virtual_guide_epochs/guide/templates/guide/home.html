@@ -1,24 +1,58 @@
 {% extends 'guide/base.html' %}
-
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-<h1 class="text-center">Добро пожаловать в Виртуальный гид по эпохам!</h1>
+<div class="text-center mb-5">
+    <h1>🏛 Добро пожаловать в историческое приключение!</h1>
+    <p class="lead">Пройди путь от Египта до Рима — изучай, играй, побеждай!</p>
+</div>
 
-<div class="row">
+<!-- Общий прогресс -->
+{% if user.is_authenticated %}
+<div class="mb-4">
+    <h5>📊 Ваш прогресс: {{ completed }} из {{ total }} лекций ({{ percent }}%)</h5>
+    <div class="progress" style="height: 20px;">
+        <div class="progress-bar bg-success" role="progressbar"
+             style="width: {{ percent }}%;" aria-valuenow="{{ percent }}"
+             aria-valuemin="0" aria-valuemax="100">
+            {{ percent }}%
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Эпохи как этапы квеста -->
+<div class="row row-cols-1 row-cols-md-3 g-4">
     {% for era in eras %}
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                {% if era.image %}
-                    <img src="{{ era.image.url }}" class="card-img-top" alt="{{ era.name }}">
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+            {% if era.image %}
+                <img src="{{ era.image.url }}" class="card-img-top" alt="{{ era.name }}">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ era.name }}</h5>
+                <p class="card-text text-muted">{{ era.description|truncatewords:20 }}</p>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'era_detail' era.pk %}" class="btn btn-outline-primary mt-auto">
+                        Перейти к эпохе
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}?next={% url 'era_detail' era.pk %}" class="btn btn-outline-secondary mt-auto">
+                        Войдите, чтобы начать
+                    </a>
                 {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ era.name }}</h5>
-                    <p class="card-text">{{ era.description|truncatewords:15 }}</p>
-                    <a href="{% url 'era_detail' era.pk %}" class="btn btn-primary">Подробнее</a>
-                </div>
             </div>
         </div>
+    </div>
     {% endfor %}
 </div>
+<style>
+    .card-img-top {
+        object-fit: cover;
+        height: 220px;
+        width: 100%;
+    }
+</style>
+
 {% endblock %}

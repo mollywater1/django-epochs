@@ -1,10 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'guide/base.html' %}
+{% load custom_filters %}
+{% block title %}{{ lecture.title }}{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-4">{{ lecture.title }}</h1>
+
+    <!-- Лекция -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-body">
+            <p style="font-size: 18px;">{{ lecture.content|linebreaks }}</p>
+        </div>
+    </div>
+
+    <!-- Тест -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-4 text-center">🧠 Проверь свои знания</h4>
+            <form method="post">
+                {% csrf_token %}
+                {% for question in questions %}
+                    <div class="mb-4">
+                        <strong>{{ forloop.counter }}. {{ question.question }}</strong>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="radio" name="question_{{ forloop.counter }}" value="{{ question.option1 }}" required>
+                            <label class="form-check-label">{{ question.option1 }}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ forloop.counter }}" value="{{ question.option2 }}">
+                            <label class="form-check-label">{{ question.option2 }}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ forloop.counter }}" value="{{ question.option3 }}">
+                            <label class="form-check-label">{{ question.option3 }}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ forloop.counter }}" value="{{ question.option4 }}">
+                            <label class="form-check-label">{{ question.option4 }}</label>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">Отправить ответы</button>
+                </div>
+            </form>
+        </div>
+    </div>
+<!-- Лекции этой эпохи -->
+<div class="card mt-5">
+    <div class="card-body">
+        <h5 class="card-title">📚 Лекции эпохи «{{ lecture.era.name }}»</h5>
+        <ul class="list-group list-group-flush">
+            {% for lec in all_lectures %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="{% url 'lecture_detail' lec.pk %}">{{ lec.title }}</a>
+                    {% if progress_map|dict_get:lecture.id %}
+    <span class="badge bg-success ms-2">✅</span>
+{% endif %}
+
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+    <!-- Назад -->
+    <div class="text-center mt-4">
+        <a href="{% url 'era_detail' lecture.era.pk %}" class="btn btn-outline-secondary">⬅ Вернуться к эпохе</a>
+    </div>
+</div>
+{% endblock %}

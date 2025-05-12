@@ -1,4 +1,5 @@
 {% extends 'guide/base.html' %}
+{% load custom_filters %}
 {% load static %}
 {% block title %}{{ era.name }}{% endblock %}
 
@@ -7,45 +8,46 @@
     <h1 class="text-center">{{ era.name }}</h1>
     <p class="era-description">{{ era.description }}</p>
 
-    <!-- Отображение изображения эпохи -->
     {% if era.image %}
     <div class="text-center my-4">
         <img src="{{ era.image.url }}" alt="{{ era.name }}" class="fixed-size-image">
     </div>
     {% endif %}
 
-    <!-- Случайный факт -->
     <h3 class="section-title">Случайный факт:</h3>
     <div class="alert alert-info random-fact">
         {{ random_fact }}
     </div>
 
-    <!-- Лекции -->
     <h3 class="section-title">Лекции:</h3>
     <ul class="list-group mb-4 lectures-list">
         {% for lecture in lectures %}
-            <li class="list-group-item">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
                 <strong>{{ lecture.title }}</strong>
-                <p>{{ lecture.content|safe }}</p>
-            </li>
+{% if progress_map|dict_get:lecture.id %}
+    <span class="badge bg-success ms-2">✅</span>
+{% endif %}
+
+            </div>
+            <a href="{% url 'lecture_detail' lecture.pk %}" class="btn btn-sm btn-outline-primary">Пройти</a>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">Лекций пока нет</li>
         {% endfor %}
     </ul>
 
-    <!-- Раздел кнопок -->
-    <div class="row mt-4">
-        <div class="col-md-6 text-center">
-            <h3 class="section-title">Мини-игра:</h3>
-            <a href="{% url 'mini_game' era.pk %}" class="btn btn-success btn-block">Перейти к мини-игре</a>
-        </div>
-        <div class="col-md-6 text-center">
-            <h3 class="section-title">Викторина:</h3>
-            <a href="{% url 'quiz' era.pk %}" class="btn btn-primary btn-block">Пройти викторину</a>
-        </div>
+    <div class="text-center mt-5">
+        <h3 class="section-title">🏆 Мини-игра</h3>
+        {% if mini_game_unlocked %}
+            <a href="{% url 'mini_game' era.pk %}" class="btn btn-success btn-block">Открыта! Играть</a>
+        {% else %}
+            <button class="btn btn-secondary btn-block" disabled>Недоступна — пройдите все лекции</button>
+        {% endif %}
     </div>
 </div>
 
 <style>
-    /* Универсальный стиль для текста */
     body {
         font-family: 'Arial', sans-serif;
     }
@@ -67,7 +69,6 @@
         color: #444;
     }
 
-    /* Заголовки */
     .section-title {
         font-size: 24px;
         color: #222;
@@ -75,7 +76,6 @@
         margin-bottom: 20px;
     }
 
-    /* Изображение эпохи */
     .fixed-size-image {
         width: 100%;
         max-width: 1280px;
@@ -85,7 +85,6 @@
         border-radius: 8px;
     }
 
-    /* Кнопки */
     .btn-block {
         width: 80%;
         padding: 10px;
@@ -98,15 +97,9 @@
         border: none;
     }
 
-    .btn-primary {
-        background-color: #007bff;
+    .btn-secondary {
+        background-color: #6c757d;
         border: none;
-    }
-
-    /* Разделение кнопок */
-    .row {
-        margin-top: 30px;
-        margin-bottom: 20px;
     }
 </style>
 {% endblock %}

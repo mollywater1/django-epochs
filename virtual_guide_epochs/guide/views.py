@@ -1,242 +1,219 @@
 from django.contrib.auth.decorators import login_required
-
-from .models import Era, QuizQuestion, UserProfile
-from django.shortcuts import redirect
-from django.contrib.auth.forms import UserCreationForm
-
-from .models import Lecture
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Era, QuizQuestion
+from django.contrib.auth.forms import UserCreationForm
+from .forms import CustomUserCreationForm
+from .models import Era, Lecture, QuizQuestion, UserProfile, LectureProgress, MiniGameUnlock
 import random
 
-ERA_FACTS = {
-    "Древний Египет": [
-        "Древний Египет просуществовал более 3000 лет, начиная с 3150 года до н.э.",
-        "Пирамиды Гизы — единственное сохранившееся чудо света из семи древних чудес.",
-        "Фараон Тутанхамон стал знаменитым благодаря своей почти нетронутой гробнице, найденной в 1922 году.",
-        "Древние египтяне использовали папирус для письма — это был один из первых типов бумаги.",
-        "Клеопатра VII была последней фараоншей Древнего Египта и говорила на греческом языке.",
-        "Нил был жизненной артерией Древнего Египта, обеспечивая питьевую воду, орошение и транспорт.",
-        "Древние египтяне верили в более чем 2000 богов и богинь.",
-        "Иероглифы — древнеегипетская система письма, использовавшаяся для религиозных и официальных текстов.",
-        "Сфинкс — это монументальное сооружение с телом льва и головой человека, охраняющее пирамиды Гизы.",
-        "Древние египтяне практиковали мумификацию, чтобы сохранить тела для загробной жизни.",
-        "Обычная еда древних египтян включала хлеб и пиво.",
-        "Фараоны считались божественными правителями, воплощением богов на земле.",
-        "Древние египтяне изобрели солнечный календарь с 365 днями.",
-        "Жуки-скарабеи считались священными символами возрождения и защиты.",
-        "Кошки почитались как священные животные, часто ассоциируемые с богиней Бастет.",
-        "Пирамида Хеопса является крупнейшей из пирамид Гизы и единственной из семи чудес света, сохранившейся до наших дней.",
-        "Древние египтяне были одними из первых врачей, практикуя хирургические операции и лечащие мази.",
-        "Писцы были одними из самых уважаемых людей в обществе, благодаря своей грамотности.",
-        "Храмы Карнака и Луксора являются одними из самых впечатляющих архитектурных достижений древних египтян.",
-        "Фараон Рамсес II был одним из самых влиятельных и известных фараонов, правивших более 60 лет.",
-        "Древние египтяне использовали сложные системы ирригации для выращивания сельскохозяйственных культур.",
-        "Гробница Нефертари, жены Рамсеса II, считается одной из самых красиво украшенных гробниц.",
-        "Бог Ра был богом солнца и главным божеством в египетской мифологии.",
-        "Женщины в Древнем Египте имели больше прав и свобод, чем в других древних цивилизациях.",
-        "Древние египтяне носили макияж, особенно вокруг глаз, чтобы защититься от солнца и инфекции.",
-        "Слово 'фараон' изначально означало 'большой дом' и относилось к дворцу правителя.",
-        "Амулеты в форме анкха символизировали жизнь и часто использовались в религиозных ритуалах.",
-        "Древние египтяне строили обелиски, чтобы почтить богов и отметить важные события.",
-        "Многие пирамиды и храмы украшены сложными рельефами и фресками.",
-        "Древние египтяне верили, что их жизнь в загробном мире зависит от правильного проведения ритуалов."
-    ],
-    "Античный Рим": [
-    "Римская империя просуществовала более 1000 лет, начиная с основания Рима в 753 году до н.э.",
-    "Колизей, также известный как Амфитеатр Флавиев, мог вмещать до 50 000 зрителей.",
-    "Римляне построили сеть дорог длиной более 400 000 километров, включая 80 000 километров мощёных дорог.",
-    "Латинский язык, используемый в Древнем Риме, стал основой для многих современных языков, таких как итальянский, французский, испанский и португальский.",
-    "Первым императором Рима был Октавиан Август, племянник и приёмный сын Юлия Цезаря.",
-    "Римляне изобрели бетон, который использовался для строительства многих их зданий, включая Пантеон.",
-    "Гладиаторские бои были популярным зрелищем в Древнем Риме.",
-    "Римская система акведуков снабжала водой города и сельскую местность, некоторые из них используются до сих пор.",
-    "Римский форум был политическим, коммерческим и религиозным центром города.",
-    "Пантеон — римский храм всех богов, известный своим куполом с отверстием в центре (окулюсом).",
-    "В Риме были общественные бани, где люди могли мыться, общаться и отдыхать.",
-    "Юлий Цезарь был убит в 44 году до н.э. в результате заговора сенаторов.",
-    "Римское право оказало значительное влияние на правовые системы многих современных стран.",
-    "Гора Везувий изверглась в 79 году н.э., уничтожив города Помпеи и Геркуланум.",
-    "Римские гладиаторы часто были рабами или преступниками, но могли стать героями благодаря своей славе.",
-    "Император Константин Великий сделал христианство официальной религией Римской империи в 313 году н.э.",
-    "Термы Каракаллы были одними из крупнейших банных комплексов в Риме.",
-    "Римляне изобрели систему центрального отопления под названием гипокауст.",
-    "Римская армия была одной из самых организованных и эффективных армий в истории.",
-    "Римские цифры, такие как I, V, X, L, C, D и M, до сих пор используются в некоторых контекстах.",
-    "Цезарь Август учредил первую в мире постоянную полицию и пожарную службу.",
-    "Римляне использовали архитектурную арку для строительства зданий и мостов.",
-    "Римская империя была разделена на Восточную и Западную части в 395 году н.э.",
-    "Гладиаторы использовали различные виды оружия и доспехов, в зависимости от их стиля боя.",
-    "Сенат играл важную роль в политической системе Рима, даже после появления императоров.",
-    "Римские дороги строились с учётом долговечности и прямолинейности.",
-    "Легионы — главная военная единица Римской армии — состояли из около 5000 солдат.",
-    "Колизей использовался не только для боёв гладиаторов, но и для инсценировок морских сражений.",
-    "Император Нерон обвинялся в поджоге Рима в 64 году н.э., хотя его причастность остаётся спорной.",
-    "Падение Западной Римской империи произошло в 476 году н.э., что считается концом древней истории."
-],
-    "Древняя Греция": [
-    "Древняя Греция считается родиной демократии, впервые введённой в Афинах в 5 веке до н.э.",
-    "Олимпийские игры впервые прошли в 776 году до н.э. в Олимпии и были посвящены Зевсу.",
-    "Гомер, автор 'Илиады' и 'Одиссеи', считается одним из величайших поэтов Древней Греции.",
-    "Греческий алфавит стал основой для латинского и кириллического алфавитов.",
-    "Философы, такие как Сократ, Платон и Аристотель, заложили основы западной философии.",
-    "Парфенон, храм на Афинском акрополе, посвящён богине Афине, покровительнице города.",
-    "Греки верили в 12 олимпийских богов, таких как Зевс, Посейдон, Афина и Аполлон.",
-    "Греческий театр возник как часть религиозных обрядов, связанных с богом Дионисом.",
-    "Пифагор, известный математик, сформулировал теорему, названную в его честь.",
-    "Александр Македонский создал одну из крупнейших империй в истории к 323 году до н.э.",
-    "Греки изобрели архитектурные ордера: дорический, ионический и коринфский.",
-    "Древнегреческие города-государства, такие как Афины и Спарта, были независимыми и часто воевали друг с другом.",
-    "Греческие мифы рассказывают о богах, героях и чудовищах, таких как Геракл, Персей и Медуза.",
-    "Спартанское общество было сосредоточено на военной подготовке и дисциплине.",
-    "Гиппократ, известный как 'отец медицины', создал клятву, которая используется врачами до сих пор.",
-    "Греческие корабли, такие как триремы, использовались для морских сражений и торговли.",
-    "Оракул в Дельфах считался посредником между людьми и богами.",
-    "Марафонская битва 490 года до н.э. стала легендарной благодаря подвигу греческого бегуна.",
-    "Архимед открыл принципы гидростатики и стал автором многих изобретений.",
-    "Древнегреческие вазы использовались не только для хранения, но и для украшения домов и храмов.",
-    "Греки активно занимались колонизацией и основали множество поселений по всему Средиземноморью.",
-    "Афины были центром искусства, литературы и философии Древней Греции.",
-    "Греки ввели понятие трагедии и комедии в театральное искусство.",
-    "Фидий был известным скульптором, создавшим статую Зевса в Олимпии — одно из семи чудес света.",
-    "Греческие математики, такие как Евклид, заложили основы геометрии.",
-    "Дельфийский гимн является одним из старейших сохранившихся музыкальных произведений.",
-    "Спарта известна своей военной мощью и системой воспитания детей, называемой 'агогой'.",
-    "Греки впервые начали изучать звёзды и планеты, положив начало астрономии.",
-    "Греческая архитектура повлияла на строительство зданий в эпоху Возрождения и современности.",
-    "Древнегреческие учёные, такие как Аристотель, впервые систематизировали знания о природе и биологии."
-],
-}
+# Заглушка для случайных фактов
+ERA_FACTS = {}
 
+from guide.models import Lecture, LectureProgress
 
 def home(request):
-    eras = Era.objects.all()  # Получить все эпохи
-    quizzes = QuizQuestion.objects.all()  # Получить все викторины
-    return render(request, 'guide/home.html', {'eras': eras, 'quizzes': quizzes})
+    eras = Era.objects.all()
+    quizzes = QuizQuestion.objects.all()
 
+    if request.user.is_authenticated:
+        total = Lecture.objects.count()
+        completed = LectureProgress.objects.filter(user=request.user, viewed=True).count()
+        percent = int((completed / total) * 100) if total > 0 else 0
+    else:
+        total = completed = percent = 0
 
-def era_detail(request, pk):
-    # Получаем эпоху из базы данных
-    era = get_object_or_404(Era, pk=pk)
-    materials = era.materials.all()
-    lectures = era.lectures.all()
-    quizzes = era.quiz_questions.all()
-
-    # Получаем случайный факт
-    era_name = era.name
-    random_fact = random.choice(ERA_FACTS.get(era_name, ["Фактов для этой эпохи пока нет."]))
-
-    return render(request, 'guide/era_details.html', {
-        'era': era,
-        'materials': materials,
-        'lectures': lectures,
+    return render(request, 'guide/home.html', {
+        'eras': eras,
         'quizzes': quizzes,
-        'random_fact': random_fact,
+        'total': total,
+        'completed': completed,
+        'percent': percent,
     })
-
-
-from django.shortcuts import render
-
-def quiz(request, pk):
-    era = get_object_or_404(Era, pk=pk)
-
-
-    questions_by_level = {
-        1: list(era.quiz_questions.all()[:4]),
-        2: list(era.quiz_questions.all()[4:7]),
-        3: list(era.quiz_questions.all()[7:10]),
-    }
-
-    # Определяем текущий уровень
-    current_level = int(request.GET.get('level', 1))
-    if current_level not in questions_by_level:
-        return redirect('era_detail', pk=pk)
-
-    questions = questions_by_level[current_level]
-
-    if request.method == 'POST':
-        # Проверяем ответы пользователя
-        correct_answers = 0
-        for i, question in enumerate(questions):
-            selected_option = request.POST.get(f'question_{i + 1}')
-            if selected_option and selected_option.strip() == question.correct_answer.strip():
-                correct_answers += 1
-
-        if correct_answers == len(questions):
-            # Если все ответы на текущем уровне правильные
-            if current_level == 3:
-                return render(request, 'guide/quiz_result.html', {
-                    'era': era,
-                    'score': 'Вы успешно прошли викторину!',
-                    'total': len(era.quiz_questions.all())
-                })
-            else:
-                # Переход на следующий уровень
-                return redirect(f'/era/{pk}/quiz/?level={current_level + 1}')
-        else:
-            # Если есть ошибки, остаёмся на текущем уровне
-            return render(request, 'guide/quiz_result.html', {
-                'era': era,
-                'score': f'Вы не прошли уровень {current_level}. Попробуйте снова.',
-                'total': len(era.quiz_questions.all())
-            })
-
-    return render(request, 'guide/quiz.html', {'era': era, 'questions': questions, 'current_level': current_level})
-
-
-
-
-
-
 
 
 
 @login_required
+def era_detail(request, pk):
+    era = get_object_or_404(Era, pk=pk)
+    lectures = era.lectures.all()
+    random_fact = random.choice(ERA_FACTS.get(era.name, ["Фактов пока нет."]))
+
+    viewed_lectures = LectureProgress.objects.filter(user=request.user, lecture__in=lectures, viewed=True)
+    progress_map = {lp.lecture_id: True for lp in viewed_lectures}
+
+    unlock = MiniGameUnlock.objects.filter(user=request.user, era=era, unlocked=True).exists()
+
+    return render(request, 'guide/era_details.html', {
+        'era': era,
+        'lectures': lectures,
+        'random_fact': random_fact,
+        'mini_game_unlocked': unlock,
+        'progress_map': progress_map,
+    })
+
+
+
+
+from django.contrib import messages
+
+from .models import MiniGameUnlock
+
+from django.contrib import messages
+from .models import LectureProgress, MiniGameUnlock
+
+@login_required
+def lecture_detail(request, pk):
+    lecture = get_object_or_404(Lecture, pk=pk)
+    user = request.user
+    progress, _ = LectureProgress.objects.get_or_create(user=user, lecture=lecture)
+
+    # Отмечаем просмотр
+    if not progress.viewed:
+        progress.viewed = True
+        progress.save()
+
+    questions = lecture.quiz_questions.all()
+
+    if request.method == 'POST':
+        correct = 0
+        total = questions.count()
+        for i, question in enumerate(questions):
+            answer = request.POST.get(f'question_{i + 1}')
+            if answer and answer.strip() == question.correct_answer.strip():
+                correct += 1
+
+        if correct == total:
+            if not progress.quiz_completed:
+                progress.quiz_completed = True
+                progress.save()
+
+                user.profile.xp += 10
+                user.profile.save()
+
+            messages.success(request, f"✅ Отлично! Ты ответил правильно на все {total} вопросов и получил 10 XP.")
+        else:
+            messages.warning(request, f"⚠️ Ты ответил правильно на {correct} из {total} вопросов. Попробуй ещё раз!")
+
+    # Проверка мини-игры
+    era_lectures = Lecture.objects.filter(era=lecture.era)
+    viewed_count = LectureProgress.objects.filter(user=user, lecture__in=era_lectures, viewed=True).count()
+
+    if viewed_count == era_lectures.count():
+        MiniGameUnlock.objects.update_or_create(
+            user=user,
+            era=lecture.era,
+            defaults={'unlocked': True}
+        )
+
+    # Список всех лекций этой эпохи + прогресс
+    all_lectures = era_lectures.order_by('order')
+    progress_map = {
+        lp.lecture_id: lp.viewed
+        for lp in LectureProgress.objects.filter(user=user, lecture__in=all_lectures)
+    }
+
+    return render(request, 'guide/lecture_detail.html', {
+        'lecture': lecture,
+        'questions': questions,
+        'all_lectures': all_lectures,
+        'progress_map': progress_map,
+    })
+
+
+
+@login_required
+def quiz(request, pk):
+    lecture = get_object_or_404(Lecture, pk=pk)
+    questions = list(lecture.quiz_questions.all())
+
+    if request.method == 'POST':
+        correct = 0
+        for i, question in enumerate(questions):
+            selected = request.POST.get(f'question_{i+1}')
+            if selected and selected.strip() == question.correct_answer.strip():
+                correct += 1
+
+        passed = correct == len(questions)
+        progress, _ = LectureProgress.objects.get_or_create(user=request.user, lecture=lecture)
+        if passed and not progress.quiz_completed:
+            progress.quiz_completed = True
+            progress.save()
+
+        return render(request, 'guide/quiz_result.html', {
+            'lecture': lecture,
+            'correct': correct,
+            'total': len(questions),
+            'passed': passed,
+        })
+
+    return render(request, 'guide/quiz.html', {
+        'lecture': lecture,
+        'questions': questions
+    })
+
+
+@login_required
 def profile_view(request):
-    try:
-        user_profile = request.user.profile
-    except UserProfile.DoesNotExist:
-        return render(request, 'guide/error.html', {'message': 'Profile not found'})
-    return render(request, 'guide/profile.html', {'profile': user_profile})
-
-
+    user = request.user
+    completed, total, percent = calculate_progress(user)
+    return render(request, 'guide/profile.html', {
+        'profile': user.profile,
+        'completed': completed,
+        'total': total,
+        'percent': percent,
+    })
 
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'guide/register.html', {'form': form})
 
 
+@login_required
 def mini_game(request, pk):
     era = get_object_or_404(Era, pk=pk)
-    user_profile = UserProfile.objects.get(user=request.user)
+    user = request.user
+    lectures = era.lectures.all()
 
+    # Проверка: все 10 лекций просмотрены?
+    all_viewed = all(
+        LectureProgress.objects.filter(user=user, lecture=lec, viewed=True).exists()
+        for lec in lectures
+    )
+
+    unlock, _ = MiniGameUnlock.objects.get_or_create(user=user, era=era)
+    if all_viewed and not unlock.unlocked:
+        unlock.unlocked = True
+        unlock.save()
+
+    if not unlock.unlocked:
+        return render(request, 'guide/mini_game_locked.html', {'era': era})
+
+    # Награда XP за игру
     if request.method == 'POST':
-        user_profile.xp += 50
-        user_profile.save()
-
+        profile = UserProfile.objects.get(user=user)
+        profile.xp += 50
+        profile.save()
         return redirect('era_detail', pk=era.pk)
 
-
-    if era.name == "Древний Египет":
-        template_name = 'guide/egypt_mini_game.html'
-    elif era.name == "Античный Рим":
-        template_name = 'guide/rome_mini_game.html'
-    elif era.name == "Древняя Греция":
-        template_name = 'guide/greece_mini_game.html'
-    else:
-        template_name = 'guide/default_mini_game.html'
-
+    # Выбор шаблона мини-игры
+    template_map = {
+        "Древний Египет": 'guide/egypt_mini_game.html',
+        "Античный Рим": 'guide/rome_mini_game.html',
+        "Древняя Греция": 'guide/greece_mini_game.html',
+        "Месопотамия": 'guide/mesopotamia_mini_game.html',
+    }
+    template_name = template_map.get(era.name, 'guide/default_mini_game.html')
     return render(request, template_name, {'era': era})
 
 
-
-def lecture_detail(request, pk):
-    lecture = get_object_or_404(Lecture, pk=pk)
-    return render(request, 'guide/lecture_detail.html', {'lecture': lecture})
+def calculate_progress(user):
+    total_lectures = Lecture.objects.count()
+    completed = LectureProgress.objects.filter(user=user, viewed=True).count()
+    percent = int((completed / total_lectures) * 100) if total_lectures else 0
+    return completed, total_lectures, percent
